@@ -1,0 +1,169 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: webproxy
+objects:
+  - apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      annotations:
+      labels:
+        app: ${APPLICATION_NAME}
+      name: ${APPLICATION_NAME}
+
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      labels:
+        app: ${APPLICATION_NAME}
+      name: ${APPLICATION_NAME}
+    spec:
+      tags:
+        - annotations:
+            description: Webproxy Docker image
+            tags: ${APPLICATION_NAME}
+          from:
+            kind: DockerImage
+            name: ${APPLICATION_NAME}:latest
+          importPolicy: {}
+          name: latest
+
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: "${APPLICATION_NAME}-docker-build"
+      labels:
+        app: "${APPLICATION_NAME}"
+    spec:
+      triggers:
+        - type: ImageChange
+          imageChange: {}
+        - type: ConfigChange
+      source:
+        type: Git
+        git:
+          uri: "${SOURCE_REPOSITORY_URL}"
+          ref: "${SOURCE_REPOSITORY_REF}"
+        contextDir: ${DOCKERFILE_PATH}
+      strategy:
+        dockerStrategy:
+          dockerfilePath: ${DOCKERFILE_NAME}
+      output:
+        to:
+          kind: "ImageStreamTag"
+          name: "${APPLICATION_NAME}:latest"
+      resources: {}
+      postCommit: {}
+
+  - apiVersion: v1
+    kind: DeploymentConfig
+    metadata:
+      annotations:
+      labels:
+        app: ${APPLICATION_NAME}
+      name: ${APPLICATION_NAME}
+    spec:
+      replicas: 1
+      selector:
+        name: ${APPLICATION_NAME}
+      strategy:
+        activeDeadlineSeconds: 21600
+        recreateParams:
+          timeoutSeconds: 600
+        resources: {}
+        type: Recreate
+      template:
+        metadata:
+          labels:
+            name: ${APPLICATION_NAME}
+        spec:
+          containers:
+            - image: " "
+              imagePullPolicy: IfNotPresent
+              name: ${APPLICATION_NAME}
+              ports:
+                - containerPort: 8080
+                  protocol: TCP
+              resources:
+                limits:
+                  memory: ${MEMORY_LIMIT}
+              securityContext:
+                capabilities: {}
+                privileged: false
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+      triggers:
+        - imageChangeParams:
+            automatic: true
+            containerNames:
+              - ${APPLICATION_NAME}
+            from:
+              kind: ImageStreamTag
+              name: ${APPLICATION_NAME}:latest
+          type: ImageChange
+        - type: ConfigChange
+
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app: ${APPLICATION_NAME}
+      name: webproxy
+    spec:
+      ports:
+        - name: http
+          port: 8080
+          protocol: TCP
+          targetPort: 8080
+      selector:
+        name: ${APPLICATION_NAME}
+      sessionAffinity: None
+      type: ClusterIP
+
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      annotations:
+      labels:
+        app: ${APPLICATION_NAME}
+      name: ${APPLICATION_NAME}
+    spec:
+      tls:
+        termination: edge
+      to:
+        kind: Service
+        name: webproxy
+        weight: 100
+      wildcardPolicy: None
+
+parameters:
+  - description: The name for the application.
+    name: APPLICATION_NAME
+    required: true
+    value: "webproxy"
+  - description: Git source URI for application
+    name: SOURCE_REPOSITORY_URL
+    value: "https://github.com/InnovateUKGitHub/openshift-webproxy.git"
+    required: true
+  - description: Git branch/tag reference
+    name: SOURCE_REPOSITORY_REF
+    value: "main"
+    required: false
+  - name: DOCKERFILE_PATH
+    displayName: Dockerfile path
+    description: Path within Git Repo wehere Dockerfile can be found.
+    value: "."
+    required: false
+  - name: DOCKERFILE_NAME
+    displayName: Dockerfile name
+    description: Name of Dockerfile.
+    value: "Dockerfile"
+    required: true
+  - name: MEMORY_LIMIT
+    description: Memory limit
+    value: "1Gi"

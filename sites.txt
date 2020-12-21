@@ -1,0 +1,9 @@
+beta.innovateuk.org https://www.gov.uk/government/organisations/innovate-uk
+britishbusinessclub.innovateuk.org https://www.gov.uk/government/organisations/uk-trade-investment
+catapult.innovateuk.org https://catapult.org.uk/
+horizons.innovateuk.org https://www.gov.uk/government/organisations/innovate-uk
+ictomorrow.innovateuk.org https://www.gov.uk/government/organisations/innovate-uk
+interact.innovateuk.org https://www.gov.uk/apply-funding-innovation
+new.innovateuk.org https://www.gov.uk/government/organisations/innovate-uk
+sbri.innovateuk.org https://www.gov.uk/government/collections/sbri-the-small-business-research-initiative
+vouchers.innovateuk.org https://www.gov.uk/government/organisations/innovate-uk
