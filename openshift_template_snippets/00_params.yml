@@ -1,0 +1,39 @@
+parameters:
+  - description: The name for the application.
+    name: APPLICATION_NAME
+    required: true
+    value: "webproxy"
+  - description: The name for the application.
+    name: APPLICATION_BUILDER_NAME
+    required: true
+    value: "webproxy-builder"
+  - description: Git source URI for application
+    name: SOURCE_REPOSITORY_URL
+    value: "https://github.com/InnovateUKGitHub/openshift-webproxy.git"
+    required: true
+  - description: Git branch/tag reference
+    name: SOURCE_REPOSITORY_REF
+    value: "main"
+    required: false
+  - name: DOCKERFILE_PATH
+    displayName: Dockerfile path
+    description: Path within Git Repo wehere Dockerfile can be found.
+    value: "."
+    required: false
+  - name: DOCKERFILE_NAME
+    displayName: Dockerfile name
+    description: Name of Dockerfile.
+    value: "Dockerfile"
+    required: true
+  - name: MEMORY_LIMIT
+    description: Memory limit
+    value: "8Mi"
+  - name: CPU_LIMIT
+    description: CPU limit
+    value: "100m"
+  - name: MEMORY_REQ
+    description: Memory request
+    value: "1Mi"
+  - name: CPU_REQ
+    description: CPU request
+    value: "1m"

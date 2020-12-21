@@ -25,5 +25,4 @@ echo "---> Building webproxy..."
 cd /opt/app-root
 cp entrypoint.sh /usr/local/bin/
 chmod 755 /usr/local/bin/entrypoint.sh
-cp lighttpd-header.conf /etc/lighttpd/lighttpd.conf
-cp sites.txt /etc/
+cp -f lighttpd-header.conf /etc/lighttpd/lighttpd.conf

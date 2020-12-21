@@ -1,0 +1,16 @@
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: ${APPLICATION_NAME}
+    name: webproxy
+  spec:
+    ports:
+      - name: http
+        port: 8080
+        protocol: TCP
+        targetPort: 8080
+    selector:
+      name: ${APPLICATION_NAME}
+    sessionAffinity: None
+    type: ClusterIP

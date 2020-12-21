@@ -1,5 +1,11 @@
 #!/bin/sh
 
+if ! whoami &>/dev/null; then
+  if [ -w /etc/passwd ]; then
+    sed -i "s/^\(lighttpd:x:\)100:101/\1$(id -u):0/" /etc/passwd
+  fi
+fi
+
 sed -i "s/\$PORT/$PORT/" /etc/lighttpd/lighttpd.conf
 
 while read -r src dst; do
@@ -7,10 +13,23 @@ while read -r src dst; do
 \$SERVER["socket"] == ":$PORT" {
   \$HTTP["host"] =~ "$src" {
     url.redirect = ( "^/(.*)" => "$dst" )
-    # url.redirect = ( "^/(.*)" => "https://%1" )
   }
 }
 
 EOF
-done </etc/sites.txt
+done </etc/sites/sites.txt
+
+cat <<EOF >/var/www/localhost/htdocs/index.html
+<HTML>
+<HEAD>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+</HEAD>
+<BODY>
+$(hostname)
+</BODY>
+</HTML>
+EOF
+
 exec lighttpd -D -f /etc/lighttpd/lighttpd.conf
