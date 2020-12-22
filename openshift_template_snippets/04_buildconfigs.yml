@@ -5,10 +5,15 @@
     labels:
       app: "${APPLICATION_NAME}"
   spec:
+    runPolicy: SerialLatestOnly
     triggers:
       - type: ImageChange
         imageChange: {}
       - type: ConfigChange
+      - type: GitHub
+        github:
+          secretReference:
+            name: webhooksecret
     source:
       type: Git
       git:
@@ -32,6 +37,7 @@
     labels:
       app: "${APPLICATION_NAME}"
   spec:
+    runPolicy: SerialLatestOnly
     triggers:
       - type: ImageChange
         imageChange: {}

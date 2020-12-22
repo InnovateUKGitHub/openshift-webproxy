@@ -37,3 +37,6 @@ parameters:
   - name: CPU_REQ
     description: CPU request
     value: "1m"
+  - description: Secret for webhook
+    name: WEBHOOK_SECRET
+    required: true

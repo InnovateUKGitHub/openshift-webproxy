@@ -1,0 +1,15 @@
+- apiVersion: v1
+  kind: Route
+  metadata:
+    annotations:
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+  spec:
+    tls:
+      termination: edge
+    to:
+      kind: Service
+      name: webproxy
+      weight: 100
+    wildcardPolicy: None

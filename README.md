@@ -5,13 +5,29 @@ Simple webproxy that redirects to a bunch of sites maintained in `sites.txt`
 ## Deployment
 
 ```bash
-oc new-project webproxy
-oc new-app --allow-missing-images -f template.yml -n webproxy
+make deploy
+```
+
+Optionally, you can create a webhook for GitHub by setting and passing in a webhook secret:
+
+```bash
+make deploy WEBHOOK_SECRET=mysecret
 ```
 
 ## Redeployment
 
 ```bash
-oc delete sa webproxy -n ng-webproxy ;and oc delete all -n ng-webproxy -l app=webproxy
-oc new-app --allow-missing-images -f template.yml -n ng-webproxy
+make redeploy
+```
+
+Optionally, you can create a webhook for GitHub by setting and passing in a webhook secret:
+
+```bash
+make redeploy WEBHOOK_SECRET=mysecret
+```
+
+## Undeployment
+
+```bash
+make undeploy
 ```

@@ -1,15 +1,23 @@
 IMAGE_NAME = alpine
 
+ifdef WEBHOOK_SECRET
+	SH_VAR = WEBHOOK_SECRET_b64=`echo -n $(WEBHOOK_SECRET) | base64`
+	OC_HPARAM = -p WEBHOOK_SECRET=`echo -n $(WEBHOOK_SECRET) | base64`
+endif
+
 .PHONY: deploy
 deploy:
-	./generate_template.sh
-	oc new-app --allow-missing-images -f template.yml
+	$(SH_VAR) ./generate_template.sh
+	oc new-app -f template.yml \
+		-p SOURCE_REPOSITORY_REF=`git branch --no-color --show-current` $(OC_HPARAM)
 
 .PHONY: undeploy
 undeploy:
-	if test -r template.yml; then rm template.yml; fi
-	oc delete sa webproxy
-	oc delete cm sites.txt
+	-rm template.yml
+	-oc delete sa webproxy
+	-oc delete cm sites.txt
+	-oc delete secret webhooksecret
+	-oc delete is webproxy
 	oc delete all -n ng-webproxy -l app=webproxy
 
 .PHONY: redeploy
