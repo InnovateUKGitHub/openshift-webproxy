@@ -40,3 +40,7 @@ parameters:
   - description: Secret for webhook
     name: WEBHOOK_SECRET
     required: true
+  - description: Environment, dev or prod
+    name: ENV
+    required: true
+    value: "dev"

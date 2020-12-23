@@ -2,15 +2,16 @@
   kind: Route
   metadata:
     annotations:
+      haproxy.router.openshift.io/balance: roundrobin
     labels:
       app: ${APPLICATION_NAME}
     name: "{{ DOMAIN }}"
   spec:
     host: "{{ DOMAIN }}"
-    tls:
-      termination: edge
     to:
       kind: Service
       name: webproxy
       weight: 100
     wildcardPolicy: None
+    tls:
+      termination: edge

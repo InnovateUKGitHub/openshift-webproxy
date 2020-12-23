@@ -2,6 +2,7 @@
   kind: Route
   metadata:
     annotations:
+      haproxy.router.openshift.io/balance: roundrobin
     labels:
       app: ${APPLICATION_NAME}
     name: ${APPLICATION_NAME}

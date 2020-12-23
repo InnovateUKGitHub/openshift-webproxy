@@ -3,6 +3,8 @@
 SNIPDIR=openshift_template_snippets
 OUTFILE=template.yml
 INT=00
+ENV=${ENV:-dev}
+DEPLOY_ENV=${DEPLOY_ENV:-org-env-0}
 
 indent() {
   local indentSize=2
@@ -14,6 +16,12 @@ indent() {
 zeropad() {
   INT=$(printf "%02d" "$1")
 }
+
+if [ "${ENV}" == 'prod' ]; then
+  INDENTED_TLS_KEY=$(pass show /CI/${DEPLOY_ENV}/webproxy/star_innovateuk_org.key | indent 2)
+  INDENTED_TLS_CRT=$(pass show /CI/${DEPLOY_ENV}/webproxy/star_innovateuk_org.crt | indent 2)
+  INDENTED_TLS_CA=$(pass show /CI/${DEPLOY_ENV}/webproxy/DigiCertCA.crt | indent 2)
+fi
 
 # Top of file
 cp ${SNIPDIR}/00_params.yml ${OUTFILE}
@@ -33,7 +41,6 @@ echo -e "${SITES}" >>${OUTFILE}
 echo >>${OUTFILE}
 
 # Add webhook secret, if set
-# WEBHOOK_SECRET_b64=$(echo ${WEBHOOK_SECRET} | base64)
 if [ -n "${WEBHOOK_SECRET_b64}" ]; then
   SITES=$(cat ${SNIPDIR}/15_secret-webhook.yml | indent 1)
   echo -e "${SITES}" >>${OUTFILE}
@@ -44,7 +51,16 @@ fi
 ROUTE_TEMPLATE=$(cat ${SNIPDIR}/20_route-template.yml)
 ROUTES=""
 while read -r d url; do
-  ROUTE="${ROUTE_TEMPLATE//\{\{ DOMAIN \}\}/$d}\n\n"
-  ROUTES+=$(echo "${ROUTE}" | indent 1)
+  ROUTE="${ROUTE_TEMPLATE//\{\{ DOMAIN \}\}/$d}\n"
+  if [ ${ENV} == 'prod' ]; then
+    TLS="  key: |-\n"
+    TLS+="${INDENTED_TLS_KEY}"
+    TLS+="\n  certificate: |-\n"
+    TLS+="${INDENTED_TLS_CRT}"
+    TLS+="\n  caCertificate: |-\n"
+    TLS+="${INDENTED_TLS_CA}\n\n"
+    ROUTE+="$(echo -en "${TLS}" | indent 2)"
+  fi
+  ROUTES+="$(echo -e "${ROUTE}" | indent 1)\n"
 done <sites.txt
 echo -en "${ROUTES}" >>${OUTFILE}
