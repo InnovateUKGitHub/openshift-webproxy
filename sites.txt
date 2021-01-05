@@ -8,3 +8,8 @@ new.innovateuk.org https://www.gov.uk/government/organisations/innovate-uk
 sbri.innovateuk.org https://www.gov.uk/government/collections/sbri-the-small-business-research-initiative
 vouchers.innovateuk.org https://www.gov.uk/government/organisations/innovate-uk
 webproxy.innovateuk.org https://gibbsoft.com
+ktn.innovateuk.org https://apply-for-innovation-funding.service.gov.uk
+ktp.innovateuk.org https://apply-for-innovation-funding.service.gov.uk
+connect.innovateuk.org https://apply-for-innovation-funding.service.gov.uk
+grants.innovateuk.org https://apply-for-innovation-funding.service.gov.uk
+projects.innovateuk.org https://apply-for-innovation-funding.service.gov.uk
