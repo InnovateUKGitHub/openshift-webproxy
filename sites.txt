@@ -13,4 +13,4 @@ ktp.innovateuk.org https://apply-for-innovation-funding.service.gov.uk
 connect.innovateuk.org https://apply-for-innovation-funding.service.gov.uk
 grants.innovateuk.org https://apply-for-innovation-funding.service.gov.uk
 projects.innovateuk.org https://apply-for-innovation-funding.service.gov.uk
-retrofit.innovateuk.org https://retrofit.innovateuk.org/
+retrofit.innovateuk.org https://www.gov.uk/government/organisations/innovate-uk
