@@ -43,5 +43,5 @@ run:
 	docker run --name webproxy -p 80:8080 -v /root/openshift-webproxy/sites.txt:/etc/sites/sites.txt -d --restart unless-stopped $(IMAGE_NAME)-app
 
 .PHONY: kill
-run:
+kill:
 	docker rm webproxy
