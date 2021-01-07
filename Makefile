@@ -40,4 +40,4 @@ test:
 
 .PHONY: run
 run:
-	docker run --rm --name webproxy -p 80:8080 -v ${PWD}/sites.txt:/etc/sites/sites.txt -d --restart unless-stopped $(IMAGE_NAME)-app
+	docker run --name webproxy -p 80:8080 -v ${PWD}/sites.txt:/etc/sites/sites.txt -d --restart unless-stopped $(IMAGE_NAME)-app
