@@ -40,7 +40,7 @@ test:
 
 .PHONY: run
 run:
-	docker run --name webproxy -p 80:8080 -v /root/openshift-webproxy/sites.txt:/etc/sites/sites.txt -d --restart unless-stopped $(IMAGE_NAME)-app
+	docker run --name $(IMAGE_NAME) -p 443:8443 -p 80:8080 -v /root/openshift-webproxy/cert.pem:/var/www/cert.pem -v /root/openshift-webproxy/sites.txt:/etc/sites/sites.txt -d --restart=on-failure $(IMAGE_NAME)-app
 
 .PHONY: kill
 kill:

@@ -7,6 +7,7 @@ if ! whoami &>/dev/null; then
 fi
 
 sed -i "s/\$PORT/$PORT/" /etc/lighttpd/lighttpd.conf
+sed -i "s/\$TLSPORT/$TLSPORT/" /etc/lighttpd/lighttpd.conf
 
 while read -r src dst; do
   cat <<-EOF >>/etc/lighttpd/lighttpd.conf
@@ -16,6 +17,11 @@ while read -r src dst; do
   }
 }
 
+\$SERVER["socket"] == ":$TLSPORT" {
+  \$HTTP["host"] =~ "$src" {
+    url.redirect = ( "^/(.*)" => "$dst" )
+  }
+}
 EOF
 done </etc/sites/sites.txt
 

@@ -3,6 +3,7 @@ FROM alpine:latest
 
 ENV BUILDER_VERSION 1.0
 ENV PORT 8080
+ENV TLSPORT 8443
 
 LABEL maintainer="Nigel Gibbs <nigel@gibbsoft.com>" \
   io.k8s.description="Platform for building UKRI webproxy" \
