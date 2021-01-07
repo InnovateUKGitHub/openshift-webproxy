@@ -44,4 +44,5 @@ run:
 
 .PHONY: kill
 kill:
-	docker rm webproxy
+	docker stop $(IMAGE_NAME)
+	docker rm $(IMAGE_NAME)
