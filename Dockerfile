@@ -9,7 +9,7 @@ LABEL maintainer="Nigel Gibbs <nigel@gibbsoft.com>" \
   io.k8s.display-name="Builder UKRI webproxy" \
   io.openshift.expose-services="8080:http" \
   io.openshift.tags="builder,1.0.0" \
-  io.openshift.s2i.scripts-url=image:///usr/libexec/s2i
+  io.openshift.s2i.scripts-url="image:///usr/libexec/s2i"
 
 RUN apk upgrade -U && \
   apk add lighttpd bash && \

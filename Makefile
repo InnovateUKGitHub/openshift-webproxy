@@ -1,5 +1,6 @@
-IMAGE_NAME = alpine
+IMAGE_NAME = webproxy
 ENV ?= dev
+NAMESPACE = ukri-webproxy
 
 ifdef WEBHOOK_SECRET
 	SH_VAR = WEBHOOK_SECRET_b64=`echo -n $(WEBHOOK_SECRET) | base64`
@@ -12,26 +13,31 @@ generate:
 
 .PHONY: deploy
 deploy: generate
-	oc new-app -f template.yml \
+	oc new-app -n $(NAMESPACE) -f template.yml \
 		-p SOURCE_REPOSITORY_REF=`git branch --no-color --show-current` -p ENV=$(ENV) $(OC_HPARAM)
 
 .PHONY: undeploy
 undeploy:
 	-rm template.yml
-	-oc delete sa webproxy
-	-oc delete cm sites.txt
-	-oc delete secret webhooksecret
-	-oc delete is webproxy
-	oc delete all -l app=webproxy
+	-oc -n $(NAMESPACE) delete sa webproxy
+	-oc -n $(NAMESPACE) delete cm sites.txt
+	-oc -n $(NAMESPACE) delete secret webhooksecret
+	-oc -n $(NAMESPACE) delete is webproxy
+	oc -n $(NAMESPACE) delete all -l app=webproxy
 
 .PHONY: redeploy
 redeploy: undeploy deploy
 
 .PHONY: build
 build:
-	docker build -t $(IMAGE_NAME) .
+	docker build -t $(IMAGE_NAME)-builder .
+	s2i build . $(IMAGE_NAME)-builder $(IMAGE_NAME)-app
 
 .PHONY: test
 test:
-	docker build -t $(IMAGE_NAME)-candidate .
-	IMAGE_NAME=$(IMAGE_NAME)-candidate test/run
+	docker build -t $(IMAGE_NAME)-builder-candidate .
+	IMAGE_NAME=$(IMAGE_NAME)-builder-candidate test/run
+
+.PHONY: run
+run:
+	docker run --rm --name webproxy -p 80:8080 -v ${PWD}/sites.txt:/etc/sites/sites.txt -d --restart unless-stopped $(IMAGE_NAME)-app
