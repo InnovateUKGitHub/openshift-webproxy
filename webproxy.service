@@ -1,0 +1,15 @@
+[Unit]
+Description=Webproxy Container
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+WorkingDirectory=$INSTALL_DIR
+ExecStartPre=-make kill
+ExecStartPre=make build
+ExecStart=make run
+
+[Install]
+WantedBy=multi-user.target

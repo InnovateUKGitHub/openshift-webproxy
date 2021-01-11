@@ -1,6 +1,8 @@
 IMAGE_NAME = webproxy
 ENV ?= dev
 NAMESPACE = ukri-webproxy
+DIR = `pwd`
+INSTALL_DIR = /opt/webproxy
 
 ifdef WEBHOOK_SECRET
 	SH_VAR = WEBHOOK_SECRET_b64=`echo -n $(WEBHOOK_SECRET) | base64`
@@ -40,9 +42,35 @@ test:
 
 .PHONY: run
 run:
-	docker run --name $(IMAGE_NAME) -p 443:8443 -p 80:8080 -v /root/openshift-webproxy/cert.pem:/var/www/cert.pem -v /root/openshift-webproxy/sites.txt:/etc/sites/sites.txt -d --restart=on-failure $(IMAGE_NAME)-app
+	docker run --name $(IMAGE_NAME) -p 443:8443 -p 80:8080 -v /root/openshift-webproxy/cert.pem:/var/www/cert.pem -v /root/openshift-webproxy/sites.txt:/etc/sites/sites.txt --restart=on-failure $(IMAGE_NAME)-app
 
 .PHONY: kill
 kill:
 	docker stop $(IMAGE_NAME)
 	docker rm $(IMAGE_NAME)
+
+.PHONY: install
+install:
+	mkdir -p $(INSTALL_DIR)
+	cp -r $(DIR)/* $(INSTALL_DIR)/
+	sed -e "s,\$$INSTALL_DIR,$(INSTALL_DIR),g" $(IMAGE_NAME).service >/usr/lib/systemd/system/$(IMAGE_NAME).service
+	cat /usr/lib/systemd/system/$(IMAGE_NAME).service
+	systemctl daemon-reload
+	systemctl enable $(IMAGE_NAME).service
+
+.PHONY: uninstall
+uninstall:
+	rm -rf $(INSTALL_DIR)
+	rm -f /usr/lib/systemd/system/$(IMAGE_NAME).service
+	systemctl daemon-reload
+
+.PHONY: start
+start:
+	systemctl start $(IMAGE_NAME)
+
+.PHONY: remove
+remove: uninstall
+
+.PHONY: info
+info:
+	echo $(DIR)
